@@ -17,10 +17,28 @@ func PasswordAuthenticatedClientFromConfig(conf *oauth2.Config, username, passwo
 		ctx = context.Background()
 	}
 
-	token, err := conf.PasswordCredentialsToken(ctx, username, password)
+	token, err := TokenForConfigAndCredentials(conf, username, password, ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return conf.Client(ctx, token), nil
+}
+
+// TokenForConfigAndCredentials will return a token using the passed-in config
+// and credentials, and an optional context. This is likely to be used if you
+// need to obtain a token, but will be arranging your own transport. Otherwise,
+// you probably want the http.Client that PasswordAuthenticatedClientFromConfig
+// can give you.
+func TokenForConfigAndCredentials(conf *oauth2.Config, username, password string, ctx context.Context) (*oauth2.Token, error) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	token, err := conf.PasswordCredentialsToken(ctx, username, password)
+	if err != nil {
+		return nil, err
+	}
+
+	return token, nil
 }
