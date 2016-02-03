@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/G5/oauth2"
+	"golang.org/x/oauth2"
 )
 
 // Variables to communicate with the auth server and request credentials. Not

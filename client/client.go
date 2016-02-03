@@ -3,9 +3,22 @@ package client
 import (
 	"net/http"
 
-	"github.com/G5/oauth2"
 	"golang.org/x/net/context"
+	"golang.org/x/oauth2"
 )
+
+func init() {
+	// Apparently Doorkeeper doesn't follow the RFC exactly on how secrets are
+	// passed. Don't worry, it's far from alone in this behavior, and joins a
+	// bunch of well-known services in being "broken". A lot of libraries will
+	// detect this behavior, but not this one, it's being passive-aggressive and
+	// forcing you to register auth providers you want to use that don't follow
+	// the convention. At least they're letting you register, I had to fork this
+	// library to get G5 Auth in there before. Anywho, this will break if you try
+	// and use a custom auth server, but I'll cross that bridge when I get to it.
+	oauth2.RegisterBrokenAuthHeaderProvider("https://auth.g5search.com/")
+	oauth2.RegisterBrokenAuthHeaderProvider("https://dev-auth.g5search.com/")
+}
 
 // PasswordAuthenticatedClientFromConfig handles some boilerplate for
 // service-to-service username/password authenticated client creation for you.
