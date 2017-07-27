@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"golang.org/x/oauth2"
@@ -63,11 +64,27 @@ func NewConfigForRedirectURL(url string) *oauth2.Config {
 }
 
 // NewDefaultEndpoint creates an endpoint using the package-level endpoint with
-// URLs configured for G5Auth.
+// URLs configured for G5Auth. It will detect and handle Endpoints where the
+// protocol is or is not specified.
 func NewDefaultEndpoint() oauth2.Endpoint {
+	root := Endpoint
+	if parsed, err := url.Parse(Endpoint); err != nil || parsed.Scheme == "" {
+		root = fmt.Sprintf("https://%s", root)
+	}
+
+	// Apparently Doorkeeper doesn't follow the RFC exactly on how secrets are
+	// passed. Don't worry, it's far from alone in this behavior, and joins a
+	// bunch of well-known services in being "broken". A lot of libraries will
+	// detect this behavior, but not this one, it's being passive-aggressive and
+	// forcing you to register auth providers you want to use that don't follow
+	// the convention. At least they're letting you register, I had to fork this
+	// library to get G5 Auth in there before:
+	// https://github.com/golang/oauth2/issues/111
+	oauth2.RegisterBrokenAuthHeaderProvider(root)
+
 	return oauth2.Endpoint{
-		AuthURL:  fmt.Sprintf("https://%s/oauth/authorize", Endpoint),
-		TokenURL: fmt.Sprintf("https://%s/oauth/token", Endpoint),
+		AuthURL:  fmt.Sprintf("%s/oauth/authorize", root),
+		TokenURL: fmt.Sprintf("%s/oauth/token", root),
 	}
 }
 
