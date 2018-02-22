@@ -72,7 +72,7 @@ type identityResponse struct {
 // context's metadata. It will throw an error if there are any failures
 // authenticating, problems with the metadata, or errors connecting to G5 Auth.
 func (a *G5Authenticator) IdentifyContext(ctx context.Context) (context.Context, error) {
-	md, ok := metadata.FromContext(ctx)
+	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("no metadata in request")
 	}

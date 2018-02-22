@@ -33,7 +33,7 @@ func NewG5AuthenticatorContext() *G5AuthenticatorContext {
 	mux := http.NewServeMux()
 	srv := httptest.NewServer(mux)
 
-	authCtx := metadata.NewContext(
+	authCtx := metadata.NewOutgoingContext(
 		context.Background(),
 		map[string][]string{"authorization": []string{"bearer 12345"}},
 	)
@@ -77,7 +77,7 @@ func TestG5Authenticator_IdentifyContext(t *testing.T) {
 func TestG5Authenticator_IdentifyContext_RespectsMagicalToken(t *testing.T) {
 	ctx := NewG5AuthenticatorContext()
 	defer ctx.Server.Close()
-	ctx.Context = metadata.NewContext(
+	ctx.Context = metadata.NewOutgoingContext(
 		context.Background(),
 		map[string][]string{"authorization": []string{"magic bacon"}},
 	)
@@ -101,7 +101,7 @@ func TestG5Authenticator_IdentifyContext_Error(t *testing.T) {
 		},
 		{
 			Setup: func(ctx *G5AuthenticatorContext) {
-				ctx.Context = metadata.NewContext(
+				ctx.Context = metadata.NewOutgoingContext(
 					context.Background(),
 					map[string][]string{"authorization": []string{}},
 				)
@@ -110,7 +110,7 @@ func TestG5Authenticator_IdentifyContext_Error(t *testing.T) {
 		},
 		{
 			Setup: func(ctx *G5AuthenticatorContext) {
-				ctx.Context = metadata.NewContext(
+				ctx.Context = metadata.NewOutgoingContext(
 					context.Background(),
 					map[string][]string{"authorization": []string{"unknown whatever"}},
 				)
@@ -119,7 +119,7 @@ func TestG5Authenticator_IdentifyContext_Error(t *testing.T) {
 		},
 		{
 			Setup: func(ctx *G5AuthenticatorContext) {
-				ctx.Context = metadata.NewContext(
+				ctx.Context = metadata.NewOutgoingContext(
 					context.Background(),
 					map[string][]string{"authorization": []string{"whatevenaretokens"}},
 				)
@@ -128,7 +128,7 @@ func TestG5Authenticator_IdentifyContext_Error(t *testing.T) {
 		},
 		{
 			Setup: func(ctx *G5AuthenticatorContext) {
-				ctx.Context = metadata.NewContext(
+				ctx.Context = metadata.NewOutgoingContext(
 					context.Background(),
 					map[string][]string{"authorization": []string{"magic bad"}},
 				)
@@ -137,7 +137,7 @@ func TestG5Authenticator_IdentifyContext_Error(t *testing.T) {
 		},
 		{
 			Setup: func(ctx *G5AuthenticatorContext) {
-				ctx.Context = metadata.NewContext(
+				ctx.Context = metadata.NewOutgoingContext(
 					context.Background(),
 					map[string][]string{"authorization": []string{"magic "}},
 				)
