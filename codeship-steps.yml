@@ -1,0 +1,9 @@
+- name: codeclimate_pre
+  service: gog5auth
+  command: bash -c "cc-test-reporter before-build"
+- name: test
+  service: gog5auth
+  command: bash -c "go test ./... -v -race -coverprofile=/coverage/c.out"
+- name: codeclimate_post
+  service: gog5auth
+  command: bash -c "cp /coverage/c.out . && cc-test-reporter after-build --exit-code $?"
